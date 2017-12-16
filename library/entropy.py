@@ -54,9 +54,11 @@ class RunningEntropy(object):
         current_entropy = float(0)
         for b in bytescounter:
             if bytescounter[b] > 0:
+		# altered original use of math.log2() to use math.log(x, 2), which ahs the same effect but lot2() isn't available
+		# in python2 
                 current_entropy -= ((float(bytescounter[b]) / self.window) *
-                                    math.log2(float(bytescounter[b]) /
-                                              self.window))
+                                    math.log(float(bytescounter[b]) /
+                                              self.window, 2))
 
         # Add entropy value to output
         entropy_list.append(current_entropy)
@@ -70,26 +72,27 @@ class RunningEntropy(object):
 
             # Remove the old byte from current window and calculate
             oldchar = byteswindow.popleft()
+	    # See same note above regarding log2
             current_entropy += ((float(bytescounter[oldchar]) / self.window) *
-                               math.log2(float(bytescounter[oldchar]) /
-                                         self.window))
+                               math.log(float(bytescounter[oldchar]) /
+                                         self.window, 2))
             bytescounter[oldchar] -= 1
             if bytescounter[oldchar] > 0:
                 current_entropy -= ((float(bytescounter[oldchar]) / self.window)
-                                    * math.log2(float(bytescounter[oldchar]) /
-                                             self.window))
+                                    * math.log(float(bytescounter[oldchar]) /
+                                             self.window, 2))
 
             # Calculate the newest added byte to the window
             if bytescounter[currchar] > 0:
                 current_entropy += ((float(bytescounter[currchar]) /
                                      self.window) *
-                                    math.log2(float(bytescounter[currchar]) /
-                                              self.window))
+                                    math.log(float(bytescounter[currchar]) /
+                                              self.window), 2)
             byteswindow.append(currchar)
             bytescounter[currchar] += 1
             current_entropy -= ((float(bytescounter[currchar]) / self.window) *
-                                math.log2(float(bytescounter[currchar]) /
-                                          self.window))
+                                math.log(float(bytescounter[currchar]) /
+                                          self.window, 2))
 
             # Add entropy value to output
             entropy_list.append(current_entropy)
